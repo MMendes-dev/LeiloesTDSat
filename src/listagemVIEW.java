@@ -1,6 +1,7 @@
 
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -136,17 +137,43 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
+       // Pega o ID da caixa de texto
+    String idProdutoStr = id_produto_venda.getText(); 
+    
+    try {
+        if (idProdutoStr.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, digite o ID do produto para vender.");
+            return;
+        }
+        
+        int idProduto = Integer.parseInt(idProdutoStr);
         
         ProdutosDAO produtosdao = new ProdutosDAO();
+        produtosdao.venderProduto(idProduto); // Chama o método do DAO para atualizar
         
-        //produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+        JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+        
+        // Atualiza a tabela para remover o produto vendido
+        listarProdutos(); 
+        id_produto_venda.setText("");
+        
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(null, "Atenção: Digite um ID de produto válido (apenas números).");
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro ao processar a venda.");
+    }
+
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-        //vendasVIEW vendas = new vendasVIEW(); 
-        //vendas.setVisible(true);
+     // Estas linhas devem ser descomentadas APÓS a criação da vendasVIEW (no Commit #2)
+    // try {
+    //     vendasVIEW vendas = new vendasVIEW();
+    //     vendas.setVisible(true);
+    // } catch (Exception e) {
+    //     JOptionPane.showMessageDialog(null, "Tela de Vendas ainda não implementada/encontrada.");
+    // }
+
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
