@@ -41,33 +41,33 @@ public class ProdutosDAO {
     // ----------------------------------------------------
     // Atividade 2: Funcionalidade Listar (Completo)
     // ----------------------------------------------------
-    public ArrayList<ProdutosDTO> listarProdutos(){
-        ArrayList<ProdutosDTO> lista = new ArrayList<>();
+   public ArrayList<ProdutosDTO> listarProdutosVendidos(){
+    ArrayList<ProdutosDTO> lista = new ArrayList<>();
+    conn = new conectaDAO().connectDB();
+    
+    // Comando SQL: busca apenas os com status 'Vendido'
+    String sql = "SELECT * FROM produtos WHERE status = 'Vendido'"; 
+    
+    try {
+        prep = conn.prepareStatement(sql);
+        rs = prep.executeQuery();
         
-        conn = new conectaDAO().connectDB();
-        String sql = "SELECT * FROM produtos WHERE status = 'A Venda'"; // Listamos apenas os 'A Venda'
-        
-        try {
-            prep = conn.prepareStatement(sql);
-            rs = prep.executeQuery();
+        while(rs.next()){
+            ProdutosDTO produto = new ProdutosDTO();
             
-            while(rs.next()){
-                ProdutosDTO produto = new ProdutosDTO();
-                
-                produto.setId(rs.getInt("id"));
-                produto.setNome(rs.getString("nome"));
-                produto.setValor(rs.getInt("valor"));
-                produto.setStatus(rs.getString("status"));
-                
-                lista.add(produto);
-            }
+            produto.setId(rs.getInt("id"));
+            produto.setNome(rs.getString("nome"));
+            produto.setValor(rs.getInt("valor"));
+            produto.setStatus(rs.getString("status"));
             
-        } catch (SQLException erro) {
-            JOptionPane.showMessageDialog(null, "Erro ao listar: " + erro.getMessage());
+            lista.add(produto);
         }
         
-        return lista;
+    } catch (SQLException erro) {
+        JOptionPane.showMessageDialog(null, "Erro ao listar vendas: " + erro.getMessage());
     }
+    return lista;
+}
 
     // ----------------------------------------------------
     // Atividade 3 - COMMIT #1: Funcionalidade Vender
