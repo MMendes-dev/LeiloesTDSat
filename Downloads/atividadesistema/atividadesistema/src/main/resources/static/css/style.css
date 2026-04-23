@@ -1,0 +1,28 @@
+/* TEMA ESCURO (DARK MODE) */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode table {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+}
+
+/* TEMA CLARO (LIGHT MODE) */
+body.light-mode {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+body.light-mode table {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    color: #000;
+}
+
+body.light-mode th {
+    background-color: #eeeeee;
+    color: #000;
+}
+

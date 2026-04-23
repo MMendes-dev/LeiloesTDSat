@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>CineMendes - Detalhes</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: sans-serif; background-color: #121212; color: white; padding: 20px; }
+        .card { border: 1px solid #444; padding: 20px; border-radius: 8px; background-color: #1e1e1e; }
+        h2 { color: #bb86fc; }
+        a { color: #03dac6; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Detalhes do Filme</h2>
+        <p><strong>Título:</strong> <span th:text="${filme.titulo}"></span></p>
+        <p><strong>Gênero:</strong> <span th:text="${filme.genero}"></span></p>
+        <p><strong>Ano:</strong> <span th:text="${filme.anoLancamento}"></span></p>
+        <p><strong>Sinopse:</strong> <span th:text="${filme.sinopse}"></span></p>
+        
+        <br>
+        <a th:href="@{/api/filmes/listagem}">Voltar para a Lista</a>
+    </div>
+</body>
+</html>

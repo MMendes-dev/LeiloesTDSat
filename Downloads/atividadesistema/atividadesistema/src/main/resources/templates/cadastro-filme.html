@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CineMendes - Cadastro</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { font-family: sans-serif; padding: 20px; transition: 0.3s; }
+        form { padding: 20px; border-radius: 8px; max-width: 500px; border: 1px solid #444; }
+        .campo { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input, textarea { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #333; color: white; }
+        .btn-save { background-color: #bb86fc; color: black; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-tema { background-color: #03dac6; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
+    </style>
+</head>
+<body class="dark-mode">
+    <h1 id="tituloPagina">Cadastrar Filme</h1>
+    
+    <button onclick="alternarTema()" class="btn-tema">Trocar Tema</button>
+
+    <form id="formFilme">
+        <input type="hidden" id="filmeId">
+        <div class="campo">
+            <label>Título:</label>
+            <input type="text" id="titulo" required>
+        </div>
+        <div class="campo">
+            <label>Gênero:</label>
+            <input type="text" id="genero" required>
+        </div>
+        <div class="campo">
+            <label>Ano:</label>
+            <input type="number" id="anoLancamento" required>
+        </div>
+        <div class="campo">
+            <label>Sinopse:</label>
+            <textarea id="sinopse" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn-save">Salvar Filme</button>
+    </form>
+    <br>
+    <a href="/api/filmes/listagem" style="color: #bb86fc;">Voltar para a lista</a>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Aplica o tema do cookie
+            const tema = getCookie("tema") || "dark-mode";
+            $("body").attr("class", tema);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) preencherParaEdicao(id);
+        });
+
+        function alternarTema() {
+            let novoTema = $("body").hasClass("dark-mode") ? "light-mode" : "dark-mode";
+            $("body").attr("class", novoTema);
+            setCookie("tema", novoTema, 7);
+        }
+
+        function setCookie(nome, valor, dias) {
+            const d = new Date();
+            d.setTime(d.getTime() + (dias*24*60*60*1000));
+            document.cookie = nome + "=" + valor + ";expires=" + d.toUTCString() + ";path=/";
+        }
+
+        function getCookie(nome) {
+            const name = nome + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+            }
+            return "";
+        }
+
+        function preencherParaEdicao(id) {
+            $("#tituloPagina").text("Editar Filme");
+            $.get("/api/rest/filmes", function(data) {
+                const filme = data.find(f => f.id == id);
+                if (filme) {
+                    $("#filmeId").val(filme.id);
+                    $("#titulo").val(filme.titulo);
+                    $("#genero").val(filme.genero);
+                    $("#anoLancamento").val(filme.anoLancamento);
+                    $("#sinopse").val(filme.sinopse);
+                }
+            });
+        }
+
+        $("#formFilme").submit(function(event) {
+            event.preventDefault();
+            const id = $("#filmeId").val();
+            const dados = { titulo: $("#titulo").val(), genero: $("#genero").val(), anoLancamento: $("#anoLancamento").val(), sinopse: $("#sinopse").val() };
+            const metodo = id ? "PUT" : "POST";
+            const url = id ? "/api/rest/filmes/" + id : "/api/rest/filmes";
+
+            $.ajax({
+                url: url,
+                type: metodo,
+                contentType: "application/json",
+                data: JSON.stringify(dados),
+                success: function() { window.location.href = "/api/filmes/listagem"; }
+            });
+        });
+    </script>
+</body>
+</html>

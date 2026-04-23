@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>CineMendes - Lista</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Estilos básicos que não dependem do tema */
+        body { font-family: sans-serif; padding: 20px; transition: 0.3s; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #444; padding: 12px; text-align: left; }
+        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        .btn-warning { background-color: #f1c40f; color: black; }
+        .btn-danger { background-color: #e74c3c; color: white; }
+        .btn-tema { background-color: #bb86fc; color: black; }
+        a { color: #03dac6; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body class="dark-mode"> <h1>Filmes Cadastrados</h1>
+    
+    <button onclick="alternarTema()" class="btn btn-tema">Alternar Tema Claro/Escuro</button>
+    <br>
+    <a href="/api/filmes/cadastro">+ Cadastrar Novo Filme</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Gênero</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaFilmesBody"></tbody>
+    </table>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Verifica o cookie de tema ao carregar
+            const tema = getCookie("tema") || "dark-mode";
+            $("body").attr("class", tema);
+            carregarFilmes();
+        });
+
+        function carregarFilmes() {
+            $.get("/api/rest/filmes", function (data) {
+                $("#tabelaFilmesBody").empty();
+                data.forEach(filme => {
+                    $("#tabelaFilmesBody").append(`
+                        <tr>
+                            <td>${filme.titulo}</td>
+                            <td>${filme.genero}</td>
+                            <td>
+                                <button class="btn btn-warning" onclick="prepararEdicao(${filme.id})">Editar</button>
+                                <button class="btn btn-danger" onclick="excluirFilme(${filme.id})">Excluir</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        function alternarTema() {
+            let novoTema = $("body").hasClass("dark-mode") ? "light-mode" : "dark-mode";
+            $("body").attr("class", novoTema);
+            setCookie("tema", novoTema, 7); // Salva a preferência por 7 dias
+        }
+
+        function setCookie(nome, valor, dias) {
+            const d = new Date();
+            d.setTime(d.getTime() + (dias*24*60*60*1000));
+            document.cookie = nome + "=" + valor + ";expires=" + d.toUTCString() + ";path=/";
+        }
+
+        function getCookie(nome) {
+            const name = nome + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+            }
+            return "";
+        }
+
+        function excluirFilme(id) {
+            if (confirm("Deseja excluir?")) {
+                $.ajax({ url: "/api/rest/filmes/" + id, type: "DELETE", success: function () { carregarFilmes(); } });
+            }
+        }
+
+        function prepararEdicao(id) { window.location.href = "/api/filmes/cadastro?id=" + id; }
+    </script>
+</body>
+</html>
